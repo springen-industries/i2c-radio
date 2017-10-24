@@ -392,7 +392,10 @@ int CPPM_Class::read(int n)
 
 void CPPM_Class::write(int n, int v) // +2015-04-01
 {
+	//create a 16 bit pointer amed at the
+	//address of the nth value in the internal channels array
 	uint16_t *oservo_p = &oservos[n];
+
 	cli();
 	*oservo_p = v;
 	sei();
