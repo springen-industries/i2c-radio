@@ -8,7 +8,7 @@ bool prepare = true;
 
 
 void requestEvent(){
-
+    // break up request from whatever they are in to the current array
 }
 
 void setup()
@@ -22,25 +22,18 @@ void setup()
 }
 
 void loop() {
-    if(prepare)
+
+    // constantly pump the last state of the control signal we have
+    // recieved
+    CPPM.cycle();
+    if (!CPPM.synchronized())
     {
-        CPPM.cycle();
-        if (CPPM.synchronized())
+        for(int i = 0; i < 15; i++)
         {
-            // for(int i = 0; i < 7; i++)
-            // {
-            //     channels[i] = CPPM.read_us(i);
-            // }
-            //
-            // PXX.prepare(channels);
+             CPPM.write(i,channels[i]);
         }
+    } else {
+      Serial.println("synchronized");
     }
-    else
-    {
-        //PXX.send();
-    }
-
-    prepare = !prepare;
-
     delay(2);
 }
