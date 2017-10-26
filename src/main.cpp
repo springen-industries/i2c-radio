@@ -1,39 +1,46 @@
 #include <Arduino.h>
+
+#include <Adafruit_NeoPixel.h>
 #include <Wire.h>
-#include <CPPM.h>
+#include <PXX.h>
 
 
-int16_t channels[16] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
-bool prepare = true;
+#define PPM_PIN 9
+
+int16_t channels[8] = { 0,0,0,0,0,0,0,0 };
+Wcppm wCPPM;
+
+
+// the data pin for the NeoPixels
+int neoPixelPin = 6;
+// How many NeoPixels we will be using, charge accordingly
+int numPixels = 1;
+// Instatiate the NeoPixel from the ibrary
+// create a one pole (RC) lowpass filter
+
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(numPixels, neoPixelPin, NEO_GRB + NEO_KHZ800);
 
 
 void requestEvent(){
-    // break up request from whatever they are in to the current array
+    // break up channel line recieved via i2c
+    // translate it into the conteents of the channels array
+    // reset the last-heard-from failsafe
 }
 
-void setup()
-{
-    //start i2c on address 33
-    Wire.begin(33);
-    //hook up response to a request
-    Wire.onRequest(requestEvent);
-    //fire up the cppm library
-    CPPM.begin();
+void setup() {
+  strip.begin();
+  strip.setPixelColor(0, 25, 255, 25);
+  strip.show();
+  pinMode(PPM_PIN, OUTPUT);
+  wCPPM.begin(PPM_PIN);
 }
 
 void loop() {
 
     // constantly pump the last state of the control signal we have
     // recieved
-    CPPM.cycle();
-    if (!CPPM.synchronized())
-    {
-        for(int i = 0; i < 15; i++)
-        {
-             CPPM.write(i,channels[i]);
-        }
-    } else {
-      Serial.println("synchronized");
+    for(int i = 0; i < 7; i++) {
+        wCPPM.setChannel(i,channels[i]);
     }
-    delay(2);
+
 }
