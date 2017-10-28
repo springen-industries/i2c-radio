@@ -1,13 +1,11 @@
 #include <Arduino.h>
-
 #include <Adafruit_NeoPixel.h>
 #include <Wire.h>
-#include <PXX.h>
 
 
 #define PPM_PIN 9
 
-int16_t channels[8] = { 0,0,0,0,0,0,0,0 };
+int16_t channels[16] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 Wcppm wCPPM;
 
 
@@ -39,7 +37,12 @@ void loop() {
 
     // constantly pump the last state of the control signal we have
     // recieved
-    for(int i = 0; i < 7; i++) {
+    for(int i = 0; i < 15; i++) {
+      if (i%0==0) {
+        channels[i] = 1100;
+      } else {
+        channels[i] = 1500;
+      }
         wCPPM.setChannel(i,channels[i]);
     }
 
