@@ -1,49 +1,94 @@
 #include <Arduino.h>
-#include <Adafruit_NeoPixel.h>
 #include <Wire.h>
-#include <wcppm.h>
-
-#define PPM_PIN 9
-
-int16_t channels[16] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
-Wcppm wCPPM;
 
 
-// the data pin for the NeoPixels
-int neoPixelPin = 6;
-// How many NeoPixels we will be using, charge accordingly
-int numPixels = 1;
-// Instatiate the NeoPixel from the ibrary
-// create a one pole (RC) lowpass filter
+// I2C config
+#define i2c_address 8;
+#define i2c_baud 9600;
+//////////////////////CONFIGURATION///////////////////////////////
+#define chanel_number 16  //set the number of chanels
+#define default_servo_value 1599  //set the default servo value
+#define PPM_FrLen 22500  //set the PPM frame length in microseconds (1ms = 1000µs)
+#define PPM_PulseLen 300  //set the pulse length
+#define onState 1  //set polarity of the pulses: 1 is positive, 0 is negative
+#define sigPin 9  //set PPM signal output pin on the arduino
+//////////////////////////////////////////////////////////////////
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(numPixels, neoPixelPin, NEO_GRB + NEO_KHZ800);
 
 
-void requestEvent(){
-    // break up channel line recieved via i2c
-    // translate it into the conteents of the channels array
-    // reset the last-heard-from failsafe
+
+/*this array holds the servo values for the ppm signal
+ change theese values in your code (usually servo values move between 1000 and 2000)*/
+int ppm[chanel_number];
+
+
+// reads message from I2C and sticks it in the buffer the radio loop uses
+void readPPM(){
+  //
+  Serial.println(Wire.read())
 }
 
-void setup() {
-  strip.begin();
-  strip.setPixelColor(0, 25, 255, 25);
-  strip.show();
-  pinMode(PPM_PIN, OUTPUT);
-  wCPPM.begin(PPM_PIN);
+void receiveEvent(){
+  readPPM(); // fills the buffer from the I2C message
 }
 
-void loop() {
+void setup(){
+  Wire.begin(i2c_address);                // join i2c bus with address #8
+  Wire.onReceive(receiveEvent); // register event
+  Serial.begin(i2c_baud);
+  //initiallize default ppm values
+  for(int i=0; i<chanel_number; i++){
+    ppm[i]= default_servo_value;
+  }
 
-    // constantly pump the last state of the control signal we have
-    // recieved
-    for(int i = 0; i < 15; i++) {
-      if (i%2==0) {
-        channels[i] = 1100;
-      } else {
-        channels[i] = 1500;
-      }
-        wCPPM.setChannel(i,channels[i]);
+  pinMode(sigPin, OUTPUT);
+  digitalWrite(sigPin, !onState);  //set the PPM signal pin to the default state (off)
+
+  cli();
+  TCCR1A = 0; // set entire TCCR1 register to 0
+  TCCR1B = 0;
+
+  OCR1A = 100;  // compare match register, change this
+  TCCR1B |= (1 << WGM12);  // turn on CTC mode
+  TCCR1B |= (1 << CS11);  // 8 prescaler: 0,5 microseconds at 16mhz
+  TIMSK1 |= (1 << OCIE1A); // enable timer compare interrupt
+  sei();
+}
+
+void loop(){
+  //put main code here
+  //static int val = 1;
+  readPPM();
+  delay(10);
+}
+
+ISR(TIMER1_COMPA_vect){  //leave this alone
+  static boolean state = true;
+
+  TCNT1 = 0;
+
+  if(state) {  //start pulse
+    digitalWrite(sigPin, onState);
+    OCR1A = PPM_PulseLen * 2;
+    state = false;
+  }
+  else{  //end pulse and calculate when to start the next pulse
+    static byte cur_chan_numb;
+    static unsigned int calc_rest;
+
+    digitalWrite(sigPin, !onState);
+    state = true;
+
+    if(cur_chan_numb >= chanel_number){
+      cur_chan_numb = 0;
+      calc_rest = calc_rest + PPM_PulseLen;//
+      OCR1A = (PPM_FrLen - calc_rest) * 2;
+      calc_rest = 0;
     }
-
+    else{
+      OCR1A = (ppm[cur_chan_numb] - PPM_PulseLen) * 2;
+      calc_rest = calc_rest + ppm[cur_chan_numb];
+      cur_chan_numb++;
+    }
+  }
 }
