@@ -3,8 +3,8 @@
 
 
 // I2C config
-#define i2c_address 8;
-#define i2c_baud 9600;
+#define i2c_address 8
+#define serial_baud 9600
 //////////////////////CONFIGURATION///////////////////////////////
 #define chanel_number 16  //set the number of chanels
 #define default_servo_value 1599  //set the default servo value
@@ -21,11 +21,32 @@
  change theese values in your code (usually servo values move between 1000 and 2000)*/
 int ppm[chanel_number];
 
+// buffer to read measurents into via i2c
+byte vals[4];
 
 // reads message from I2C and sticks it in the buffer the radio loop uses
 void readPPM(){
-  //
-  Serial.println(Wire.read())
+  //get bits from wire.read
+     Wire.readBytes(vals,4); // receive byte as a character
+     for (int i=0; i < 4; i++){
+       //ppm[i] = vals[i];
+     }
+     Serial.println("-----");
+
+
+
+  /* PSUDEOCODE
+  //shift to wherever to get the index of the signal
+  int channel = byte >> something;
+  // shift back to get value of readings
+  int value = byte >> something else;
+
+  Serial.println("Channel)";
+  Serial.println(channel);
+  Serial.println(value);
+  //use that to shove the new PPM value into the appropriate channel
+  ppm[channel_number] = value;
+  */
 }
 
 void receiveEvent(){
@@ -33,9 +54,10 @@ void receiveEvent(){
 }
 
 void setup(){
-  Wire.begin(i2c_address);                // join i2c bus with address #8
-  Wire.onReceive(receiveEvent); // register event
-  Serial.begin(i2c_baud);
+  Wire.begin(i2c_address);                // join i2c bus with address as defined above
+  Wire.onReceive(receiveEvent);           // register event
+  Serial.begin(serial_baud);                 // run serial at baud as defined above
+
   //initiallize default ppm values
   for(int i=0; i<chanel_number; i++){
     ppm[i]= default_servo_value;
