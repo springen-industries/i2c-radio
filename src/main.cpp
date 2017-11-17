@@ -29,7 +29,12 @@ void readPPM(){
   //get bits from wire.read
      Wire.readBytes(vals,4); // receive byte as a character
      for (int i=0; i < 4; i++){
-       //ppm[i] = vals[i];
+       int ppmVal = map(vals[i],0,256,1000,2000);
+       Serial.print(vals[i]);
+       Serial.print(" | ");
+       Serial.print(ppmVal);
+       Serial.print(" | ");
+       ppm[i] = ppmVal;
      }
      Serial.println("-----");
 
