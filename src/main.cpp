@@ -29,29 +29,14 @@ void readPPM(){
   //get bits from wire.read
      Wire.readBytes(vals,4); // receive byte as a character
      for (int i=0; i < 4; i++){
-       int ppmVal = map(vals[i],0,256,1000,2000);
-       Serial.print(vals[i]);
-       Serial.print(" | ");
-       Serial.print(ppmVal);
-       Serial.print(" | ");
+       int ppmVal = map((int)vals[i],0,256,1000,2000);
+      // Serial.print(vals[i]);
+      //  Serial.print(" | ");
+      //  Serial.print(ppmVal);
+      //  Serial.print(" | ");
        ppm[i] = ppmVal;
      }
-     Serial.println("-----");
-
-
-
-  /* PSUDEOCODE
-  //shift to wherever to get the index of the signal
-  int channel = byte >> something;
-  // shift back to get value of readings
-  int value = byte >> something else;
-
-  Serial.println("Channel)";
-  Serial.println(channel);
-  Serial.println(value);
-  //use that to shove the new PPM value into the appropriate channel
-  ppm[channel_number] = value;
-  */
+    //  Serial.println("-----");
 }
 
 void receiveEvent(){
@@ -61,7 +46,7 @@ void receiveEvent(){
 void setup(){
   Wire.begin(i2c_address);                // join i2c bus with address as defined above
   Wire.onReceive(receiveEvent);           // register event
-  Serial.begin(serial_baud);                 // run serial at baud as defined above
+  //Serial.begin(serial_baud);                 // run serial at baud as defined above
 
   //initiallize default ppm values
   for(int i=0; i<chanel_number; i++){
