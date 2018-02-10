@@ -30,7 +30,7 @@ void readPPM(){
      //get bits from wire.read
      Wire.readBytes(vals,channelCount); // receive byte as a character
      for (int i=0; i < channelCount; i++){
-       ppm[i] = map((int)vals[i],0,256,1000,2000);z
+       ppm[i] = map((int)vals[i],0,256,1000,2000);
 }
 
 void receiveEvent(){
