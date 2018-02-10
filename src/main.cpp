@@ -35,7 +35,7 @@ void setup(){
   for(int i=0; i<chanel_number; i++){
     ppm[i]= default_servo_value;
   }
-}
+
 
 
   pinMode(sigPin, OUTPUT);
