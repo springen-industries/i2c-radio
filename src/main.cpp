@@ -34,7 +34,9 @@ void readPPM(){
       //  Serial.print(" | ");
       //  Serial.print(ppmVal);
       //  Serial.print(" | ");
-       ppm[i] = ppmVal;
+      if (ppmVal < 2000) {
+        ppm[i] = ppmVal;
+      }
      }
     //  Serial.println("-----");
 }
