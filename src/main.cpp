@@ -30,15 +30,8 @@ void readPPM(){
      Wire.readBytes(vals,4); // receive byte as a character
      for (int i=0; i < 4; i++){
        int ppmVal = map((int)vals[i],0,256,1000,2000);
-      // Serial.print(vals[i]);
-      //  Serial.print(" | ");
-      //  Serial.print(ppmVal);
-      //  Serial.print(" | ");
-      if (ppmVal < 2000) {
-        ppm[i] = ppmVal;
-      }
+
      }
-    //  Serial.println("-----");
 }
 
 void receiveEvent(){
