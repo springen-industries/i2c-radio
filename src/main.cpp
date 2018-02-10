@@ -13,18 +13,12 @@
 #define onState 1  //set polarity of the pulses: 1 is positive, 0 is negative
 #define sigPin 9  //set PPM signal output pin on the arduino
 //////////////////////////////////////////////////////////////////
-
-
-
-int channelCount = 4;
-
+const int channelCount = 4;
 /*this array holds the servo values for the ppm signal
  change theese values in your code (usually servo values move between 1000 and 2000)*/
 int ppm[chanel_number];
-
 // buffer to read measurents into via i2c
 byte vals[channelCount];
-
 // reads message from I2C and sticks it in the buffer the radio loop uses
 void readPPM(){
      //get bits from wire.read
