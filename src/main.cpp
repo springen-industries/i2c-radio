@@ -30,7 +30,7 @@ void receiveEvent(){
 
 void setup(){
   Wire.begin(i2c_address);                // join i2c bus with address as defined above
-  Wire.onReceive(receiveEvent);           // register event
+  //Wire.onReceive(receiveEvent);           // register event
   //Serial.begin(serial_baud);                 // run serial at baud as defined above
   for(int i=0; i<chanel_number; i++){
     ppm[i]= default_servo_value;
@@ -53,7 +53,7 @@ void setup(){
 }
 
 void loop(){
-  //readPPM();
+  readPPM();
   delay(10);
 }
 
