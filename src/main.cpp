@@ -16,29 +16,21 @@
 
 
 
+int channelCount = 4;
 
 /*this array holds the servo values for the ppm signal
  change theese values in your code (usually servo values move between 1000 and 2000)*/
 int ppm[chanel_number];
 
 // buffer to read measurents into via i2c
-byte vals[4];
+byte vals[channelCount];
 
 // reads message from I2C and sticks it in the buffer the radio loop uses
 void readPPM(){
-  //get bits from wire.read
-     Wire.readBytes(vals,4); // receive byte as a character
-     for (int i=0; i < 4; i++){
-       int ppmVal = map((int)vals[i],0,256,1000,2000);
-      // Serial.print(vals[i]);
-      //  Serial.print(" | ");
-      //  Serial.print(ppmVal);
-      //  Serial.print(" | ");
-      if (ppmVal < 2000) {
-        ppm[i] = ppmVal;
-      }
-     }
-    //  Serial.println("-----");
+     //get bits from wire.read
+     Wire.readBytes(vals,channelCount); // receive byte as a character
+     for (int i=0; i < channelCount; i++){
+       ppm[i] = map((int)vals[i],0,256,1000,2000);z
 }
 
 void receiveEvent(){
@@ -49,11 +41,10 @@ void setup(){
   Wire.begin(i2c_address);                // join i2c bus with address as defined above
   Wire.onReceive(receiveEvent);           // register event
   //Serial.begin(serial_baud);                 // run serial at baud as defined above
-
-  //initiallize default ppm values
   for(int i=0; i<chanel_number; i++){
     ppm[i]= default_servo_value;
   }
+
 
   pinMode(sigPin, OUTPUT);
   digitalWrite(sigPin, !onState);  //set the PPM signal pin to the default state (off)
@@ -70,11 +61,11 @@ void setup(){
 }
 
 void loop(){
-  //put main code here
-  //static int val = 1;
-  readPPM();
+  //readPPM();
   delay(10);
 }
+
+/////////// clock wizardry
 
 ISR(TIMER1_COMPA_vect){  //leave this alone
   static boolean state = true;
