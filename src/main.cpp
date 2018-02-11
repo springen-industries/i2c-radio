@@ -29,8 +29,7 @@ void readPPM(){
   //get bits from wire.read
      Wire.readBytes(vals,4); // receive byte as a character
      for (int i=0; i < 4; i++){
-       int ppmVal = map((int)vals[i],0,256,1000,2000);
-
+      ppm[i] map((int)vals[i],0,256,1000,2000);
      }
 }
 
@@ -39,8 +38,8 @@ void receiveEvent(){
 }
 
 void setup(){
-  Wire.begin(i2c_address);                // join i2c bus with address as defined above
   Wire.onReceive(receiveEvent);           // register event
+  Wire.begin(i2c_address);                // join i2c bus with address as defined above
   //Serial.begin(serial_baud);                 // run serial at baud as defined above
 
   //initiallize default ppm values
@@ -65,7 +64,7 @@ void setup(){
 void loop(){
   //put main code here
   //static int val = 1;
-  readPPM();
+  //readPPM();
   delay(10);
 }
 
