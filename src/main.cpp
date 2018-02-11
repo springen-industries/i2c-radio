@@ -38,8 +38,8 @@ void receiveEvent(){
 }
 
 void setup(){
-  Wire.onReceive(receiveEvent);           // register event
   Wire.begin(i2c_address);                // join i2c bus with address as defined above
+  Wire.onReceive(receiveEvent);           // register event
   //Serial.begin(serial_baud);                 // run serial at baud as defined above
 
   //initiallize default ppm values
