@@ -29,7 +29,7 @@ void readPPM(){
   //get bits from wire.read
      Wire.readBytes(vals,4); // receive byte as a character
      for (int i=0; i < 4; i++){
-      ppm[i] map((int)vals[i],0,256,1000,2000);
+      ppm[i] = map((int)vals[i],0,256,1000,2000);
      }
 }
 
