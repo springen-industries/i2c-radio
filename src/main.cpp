@@ -25,20 +25,18 @@ int ppm[chanel_number];
 byte vals[4];
 
 // reads message from I2C and sticks it in the buffer the radio loop uses
-void readPPM(){
+void i2cRecieve(int numBytes){
   //get bits from wire.read
-     Wire.readBytes(vals,4); // receive byte as a character
+     Wire.readBytes(vals,numBytes); // receive byte as a character
      for (int i=0; i < 4; i++){
       ppm[i] = map((int)vals[i],0,256,1000,2000);
      }
 }
 
-void receiveEvent(){
-  readPPM(); // fills the buffer from the I2C message
-}
+
 
 void setup(){
-  Wire.onReceive(receiveEvent);           // register event
+  Wire.onReceive(i2cRecieve);           // register event
   Wire.begin(i2c_address);                // join i2c bus with address as defined above
   //Serial.begin(serial_baud);                 // run serial at baud as defined above
 
