@@ -6,7 +6,7 @@
 #define i2c_address 8
 #define serial_baud 9600
 //////////////////////CONFIGURATION///////////////////////////////
-#define chanel_number 16  //set the number of chanels
+#define chanel_number 8  //set the number of chanels
 #define default_servo_value 1599  //set the default servo value
 #define PPM_FrLen 22500  //set the PPM frame length in microseconds (1ms = 1000µs)
 #define PPM_PulseLen 300  //set the pulse length
@@ -22,13 +22,13 @@
 int ppm[chanel_number];
 
 // buffer to read measurents into via i2c
-byte vals[4];
+byte vals[chanel_number];
 
 // reads message from I2C and sticks it in the buffer the radio loop uses
 void i2cRecieve(int numBytes){
   //get bits from wire.read
      Wire.readBytes(vals,numBytes); // receive byte as a character
-     for (int i=0; i < 4; i++){
+     for (int i=0; i < numBytes; i++){
       ppm[i] = map((int)vals[i],0,256,1000,2000);
      }
 }
@@ -63,7 +63,7 @@ void loop(){
   //put main code here
   //static int val = 1;
   //readPPM();
-  delay(10);
+  delay(5);
 }
 
 ISR(TIMER1_COMPA_vect){  //leave this alone
